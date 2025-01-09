@@ -6,17 +6,30 @@
     <title>OAuth Callback</title>
 </head>
 <body>
+    <p>Processing your authentication...</p>
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const code = params.get('code');
-        const error = params.get('error');
-        if (code) {
-             // Redirect to your main app with the code
-            window.location.href = `index.html?code=${code}`;
-        } else if (error) {
-            console.error("Error:", error);
+        // Extract the hash part from the URL (e.g., access_token, token_type, etc.)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+
+        const accessToken = hashParams.get("access_token");
+        const tokenType = hashParams.get("token_type");
+        const expiresIn = hashParams.get("expires_in");
+        const scope = hashParams.get("scope");
+
+        if (accessToken) {
+            // Store the access token in localStorage or sessionStorage for later use
+            localStorage.setItem("access_token", accessToken);
+            localStorage.setItem("token_type", tokenType);
+            localStorage.setItem("expires_in", expiresIn);
+            localStorage.setItem("scope", scope);
+
+            // Redirect to the main application page
+            window.location.href = "index.html";
+        } else {
+            // Show an error message if access_token is missing
+            console.error("Access token not found in the callback URL.");
+            document.body.innerHTML = "<p>Authentication failed. Please try again.</p>";
         }
-   </script>
-   <p>Processing your authentication...</p>
+    </script>
 </body>
 </html>
